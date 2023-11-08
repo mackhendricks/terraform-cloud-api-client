@@ -1,21 +1,27 @@
 #!/bin/bash
 set -x
-# SAMPLE TOKEN=Y8AXkI85YPqbUw.atlasv1.ItPm7JyxSoPpThudXODz3L1ts2lv9e9uxYih08UoAgrGvQsgccij4htA44QGMIk7sx8
-if [ $TOKEN="" ]; then
+if [ -z $TOKEN ]; then
 	echo "Set Terraform Cloud API Token by executing export TOKEN=<Terraform Cloud User or Organization Token>"
+	exit
 fi
 
+if [ -z $GITHUB_APP_ID ]; then
+	echo "Set Terraform Cloud GITHUB APP ID Token by executing export GITHUB_APP_ID=<GITHUB APP ID TOKEN>"
+	exit
+fi
 
-# $1 == Workspace Name
-# $2 == Repo Name
-# $3 == Variable Set
-# $4 == Trigger Run
+# $1 == Organization Name
+# $2 == Workspace Name
+# $3 == Repo Name
+# $4 == Variable Set
+# $5 == Trigger Run (True or Falss) - Not used yet
 
 ORGANIZATION=$1
 WORKSPACE_NAME=$2
 REPO_NAME=$3
 VARIABLE_SET=$4
-TRIGGER_RUN=$5
+TRIGGER_RUN=$5 #Not used yet
+WORKING_DIR=azure/demo
 
 WORKSPACE_PAYLOAD=$(cat <<EOF
 {"data": {
@@ -23,14 +29,14 @@ WORKSPACE_PAYLOAD=$(cat <<EOF
       "name": "$WORKSPACE_NAME",
       "resource-count": 0,
       "terraform_version": "1.6.2",
-      "working-directory": "azure/demo",
+      "working-directory": "$WORKING_DIR",
       "vcs-repo": {
         "identifier": "$REPO_NAME",
-        "github-app-installation-id": "ghain-ezotmeXemu4Zvj99",
+        "github-app-installation-id": "$GITHUB_APP_ID",
         "branch": "",
         "tags-regex": null
       },
-      "updated-at": "2017-11-29T19:18:09.976Z"
+      "updated-at": "2023-11-08T19:18:09.976Z"
     },
     "type": "workspaces"
   }
@@ -45,7 +51,7 @@ WORKSPACE_PAYLOAD_NOVCS=$(cat <<EOF
       "resource-count": 0,
       "terraform_version": "0.11.1",
       "working-directory": "",
-      "updated-at": "2017-11-29T19:18:09.976Z"
+      "updated-at": "2023-11-08T19:18:09.976Z"
     },
     "type": "workspaces"
   }
